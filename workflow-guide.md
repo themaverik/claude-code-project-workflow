@@ -632,10 +632,10 @@ Start Session (project-resume skill)
 New Feature        Bug Fix             Chore/Doc
   |                  |                    |
   v                  v                    |
-Brainstorm       Debug skill             |
+Brainstorm       Debug skill              |
   |                  |                    |
   v                  v                    |
-Plan (if complex)  Fix + test            |
+Plan (if complex)  Fix + test             |
   |                  |                    |
   v                  v                    v
 Implement --------+------------ Implement/Edit
