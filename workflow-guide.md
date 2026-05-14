@@ -140,6 +140,24 @@ Branch check:
 | R3 -- Brainstorm before new features | Requires brainstorm + sign-off before coding any new behaviour. Skipped for bug fixes, chores, tasks with full steps in Roadmap.md. |
 | R4 -- Update Roadmap.md after every task | Marks tasks `[x]` with commit hash. Advances next task to `[~]`. Commits code + Roadmap.md together. |
 
+### Session Memory Habit
+
+At session start, query claude-mem for relevant past decisions before writing any code:
+
+```
+/claude-mem:do recall what we decided about <domain>
+```
+
+This is separate from Roadmap.md and the ADR files. claude-mem is the persistent, queryable knowledge layer that survives `/compact` and `/clear`. Roadmap.md tracks task state. ADRs capture formal decisions. claude-mem holds the accumulated reasoning, patterns, and context that would otherwise have to be re-established from scratch each session.
+
+Trigger mappings to keep consistent:
+
+| Phrase | Routes to |
+|--------|-----------|
+| "remember", "past pattern", "what did we decide" | `knowledge-query` — searches claude-mem |
+| "update memory", "record decision", "save to memory" | `/claude-mem:do` — writes to claude-mem |
+| "save decision", "log pattern" | `knowledge-ingest` + `adr-manager` — also triggers claude-mem write |
+
 ---
 
 ## 3. Development -- New Feature
@@ -405,9 +423,10 @@ Or auto-triggers on "create a PR", "write a PR", "summarise changes for a pull r
 2. Any in-progress task marked `[~]` with precise notes on what remains
 3. `## Current Session State` updated
 4. ADR sweep: any uncaptured decisions? (`adr-manager` handles most automatically)
-5. Final commit (code + Roadmap.md + any ADRs)
-6. If ADRs were written this session: `doc-sync` skill consolidates to `docs/Knowledge-Base.md`
-7. "Ready to push -- confirm when you'd like me to."
+5. **Memory sweep:** save any significant patterns, decisions, or context to claude-mem that isn't already captured in an ADR — use `/claude-mem:do` explicitly. This is what carries reasoning across sessions after `/compact`
+6. Final commit (code + Roadmap.md + any ADRs)
+7. If ADRs were written this session: `doc-sync` skill consolidates to `docs/Knowledge-Base.md`
+8. "Ready to push -- confirm when you'd like me to."
 
 ### Context Limit Hit (automatic)
 
