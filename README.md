@@ -57,6 +57,34 @@ Knowledge graph at graphify-out/.
 
 ---
 
+## Session Memory — claude-mem
+
+Separate from Roadmap.md (task state) and ADR files (formal decisions), **[claude-mem](https://github.com/thedotmack/claude-mem)** is the persistent knowledge layer that carries accumulated reasoning, patterns, and context across sessions — including across `/compact` and `/clear`.
+
+Two habits to build into every session:
+
+**At session start — recall before coding:**
+```
+/claude-mem:do recall what we decided about <domain>
+```
+
+**At session end — save before closing:**
+```
+/claude-mem:do save: <what was done, what was decided, what patterns were established>
+```
+
+Trigger mappings to keep consistent in your project `CLAUDE.md`:
+
+| Phrase | Routes to |
+|--------|-----------|
+| "remember", "past pattern", "what did we decide" | `knowledge-query` — searches claude-mem |
+| "update memory", "record decision", "save to memory" | `/claude-mem:do` — writes to claude-mem |
+| "save decision", "log pattern" | `knowledge-ingest` + `adr-manager` — formal decision capture |
+
+Without these mappings explicitly in `CLAUDE.md`, an unqualified "update memory" will fall back to Claude's internal file-based memory system rather than the claude-mem plugin. See [`workflow-guide.md`](workflow-guide.md) for the full session memory habit.
+
+---
+
 ## Additional Cost and Token Optimization
 
 The baseline setup is intentionally lean. For further token efficiency and cost reduction, consider these additional plugins and skills:
