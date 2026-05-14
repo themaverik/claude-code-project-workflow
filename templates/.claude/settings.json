@@ -1,0 +1,49 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ],
+    "deny": [],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(git merge:*)",
+      "Bash(git pull:*)",
+      "Bash(git rebase:*)",
+      "Read(.env*)",
+      "Edit(.env*)",
+      "WebSearch",
+      "WebFetch"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo \"$TOOL_INPUT\" | python3 -c \"import json,sys; d=json.load(sys.stdin); print(d.get('file_path',''))\" 2>/dev/null); if echo \"$FILE\" | grep -qE '\\.env'; then echo 'BLOCKED: .env file edit requires explicit confirmation'; exit 1; fi",
+            "statusMessage": "Blocking .env edits"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$TOOL_INPUT\" | grep -q 'git commit'; then if find . -maxdepth 3 -name 'Roadmap.md' 2>/dev/null | grep -q .; then echo 'Reminder: Update Roadmap.md task markers if this commit changes progress'; fi; fi",
+            "statusMessage": "Checking commit context"
+          }
+        ]
+      }
+    ]
+  }
+}
